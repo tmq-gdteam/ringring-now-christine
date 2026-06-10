@@ -44,10 +44,9 @@
   .appbar{display:flex;align-items:center;gap:16px;padding:0 22px;height:60px;background:var(--surface);
     border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;flex-shrink:0}
   .appbar.hidden{display:none}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:17px}
-  .logo .dot{width:24px;height:24px;border-radius:50%;background:
-     radial-gradient(circle at 32% 30%, #FFC4A0, var(--brand));box-shadow:0 0 0 4px var(--brand-soft)}
-  .logo small{color:var(--ink-3);font-weight:500}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+  .logo .mark{width:30px;height:30px;flex-shrink:0;display:block}
+  .logo small{color:var(--brand);font-weight:800}
   .crumb{color:var(--ink-3);font-size:13px;font-weight:500}
   .crumb b{color:var(--ink-2)}
   .appbar .spacer{flex:1}
@@ -379,7 +378,15 @@
 
   <!-- ============ APP SHELL (non-call) ============ -->
   <header class="appbar" id="appbar">
-    <div class="logo"><span class="dot"></span><span>RingRing<small>.now</small></span></div>
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 120 120" role="img" aria-label="RingRing.now logo">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#EC6450" stroke-width="6"/>
+        <path d="M90 46 A33 33 0 1 1 90 74" fill="none" stroke="#EC6450" stroke-width="11" stroke-linecap="round"/>
+        <path d="M30 60 Q44 46 56 60 Q66 72 78 60 Q90 50 113 58"
+              fill="none" stroke="#EC6450" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>RingRing<small>.now</small></span>
+    </div>
     <nav class="topnav" id="topnav" aria-label="Primary">
       <button class="navlink" data-nav="home">Dashboard</button>
       <button class="navlink" data-nav="live">Live Room</button>
