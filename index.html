@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RingRing.now — The Open Room</title>
+<!--
+  RingRing.now — "The Open Room" UI Variation
+  A working DASHBOARD APPLICATION (not a marketing website).
+  Build inputs: 09-app-experience-modulator.md + 07-standard-app-source-pack.md
+  All demo people / recents / transcript text are [ILLUSTRATIVE ONLY] placeholders.
+  No real metrics, no fake AI processing, no compliance claims.
+-->
+<style>
+  :root{
+    /* Surfaces — bright, white, optimistic */
+    --bg:#FAFAFB; --surface:#FFFFFF; --surface-2:#F4F5F7; --line:#E7E9EE;
+    --ink:#1B2030; --ink-2:#525A6B; --ink-3:#8A92A3;
+    /* Meaning-only accents */
+    --amber:#E6A23C;        /* active translation / warmth */
+    --amber-soft:#FBEFD9;
+    --mint:#33B98A;         /* consent-ready / secure */
+    --mint-soft:#E2F5EC;
+    --brand:#3A6FF0;        /* primary action */
+    --brand-soft:#E8EFFE;
+    --danger:#D98B86;       /* gentle, never alarm-red */
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(27,32,48,.04), 0 8px 28px rgba(27,32,48,.06);
+    --shadow-lg:0 12px 48px rgba(27,32,48,.14);
+    --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.45}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:14px}
+  :focus-visible{outline:3px solid var(--brand-soft);outline-offset:2px;border-radius:8px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+  /* ---------- App shell ---------- */
+  #app{height:100%;display:flex;flex-direction:column}
+  .appbar{display:flex;align-items:center;gap:16px;padding:0 22px;height:60px;background:var(--surface);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;flex-shrink:0}
+  .appbar.hidden{display:none}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:17px}
+  .logo .dot{width:24px;height:24px;border-radius:50%;background:
+     radial-gradient(circle at 32% 30%, #6FA0FF, var(--brand));box-shadow:0 0 0 4px var(--brand-soft)}
+  .logo small{color:var(--ink-3);font-weight:500}
+  .crumb{color:var(--ink-3);font-size:13px;font-weight:500}
+  .crumb b{color:var(--ink-2)}
+  .appbar .spacer{flex:1}
+  .iconbtn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--ink-2)}
+  .iconbtn:hover{background:var(--surface-2)}
+  .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FFD9A8,#F4A36B);
+    display:grid;place-items:center;font-weight:700;color:#7a4a16;font-size:13px}
+
+  .view{flex:1;overflow:auto}
+  .wrap{max-width:1080px;margin:0 auto;padding:34px 24px 60px}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:46px;padding:0 22px;
+    border-radius:12px;font-weight:600;font-size:15px;background:var(--surface-2);color:var(--ink);transition:.15s}
+  .btn:hover{background:#E9ECF1}
+  .btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 18px rgba(58,111,240,.28)}
+  .btn.primary:hover{background:#2f63e3}
+  .btn.lg{height:54px;font-size:16px;padding:0 28px}
+  .btn.ghost{background:transparent;border:1px solid var(--line)}
+  .btn.ghost:hover{background:var(--surface-2)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  .btn.mint{background:var(--mint);color:#fff;box-shadow:0 6px 18px rgba(51,185,138,.28)}
+  .btn.danger{background:#fff;border:1px solid #F0D6D4;color:#B5524C}
+  .btn.danger:hover{background:#FCF1F0}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .pad{padding:22px}
+
+  /* ---------- HOME ---------- */
+  .greeting{font-size:13px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+  .home-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:20px;margin-top:14px}
+  .start-card{padding:26px;display:flex;flex-direction:column;gap:18px;
+    background:linear-gradient(180deg,#fff, #FBFCFE);position:relative;overflow:hidden}
+  .start-card h1{margin:0;font-size:26px;letter-spacing:-.02em}
+  .start-card p{margin:0;color:var(--ink-2);font-size:14px;max-width:46ch}
+  .start-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .joinrow{display:flex;gap:10px;align-items:end;margin-top:4px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .field input,.field select{height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);
+    background:var(--surface);color:var(--ink);min-width:0}
+  .field input::placeholder{color:var(--ink-3)}
+  .err{color:#B5524C;font-size:12.5px;margin-top:2px;display:none}
+  .err.show{display:block}
+
+  .panel-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;font-size:14px;font-weight:700}
+  .panel-title .tag{font-size:10.5px;font-weight:700;color:var(--ink-3);background:var(--surface-2);
+     padding:3px 8px;border-radius:999px;letter-spacing:.04em}
+  .recent{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px}
+  .recent:hover{background:var(--surface-2)}
+  .recent + .recent{margin-top:2px}
+  .recent .rd{width:40px;height:40px;border-radius:12px;background:var(--brand-soft);color:var(--brand);
+     display:grid;place-items:center;font-weight:700;font-size:15px;flex-shrink:0}
+  .recent .meta{flex:1;min-width:0}
+  .recent .meta b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .recent .meta span{font-size:12px;color:var(--ink-3)}
+  .recent .langs{font-size:11px;color:var(--ink-2);background:var(--surface-2);padding:4px 8px;border-radius:8px;white-space:nowrap}
+  .skel{display:flex;align-items:center;gap:12px;padding:12px}
+  .skel .b{background:linear-gradient(90deg,#EEF0F4 25%,#F6F7F9 37%,#EEF0F4 63%);background-size:400% 100%;
+     animation:shimmer 1.3s ease infinite;border-radius:8px}
+  .skel .b.av{width:40px;height:40px;border-radius:12px;flex-shrink:0}
+  .skel .b.l1{height:13px;width:55%}.skel .b.l2{height:11px;width:35%;margin-top:6px}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  .empty-mini{text-align:center;color:var(--ink-3);font-size:13px;padding:26px 10px}
+  .empty-mini button{display:block;margin:10px auto 0}
+
+  /* Ambient language strip — functional welcome band, real-session-only in production */
+  .lang-band{margin-top:20px;border:1px dashed var(--line);border-radius:var(--radius);padding:16px 18px;
+    background:repeating-linear-gradient(135deg,#fff,#fff 18px,#FCFCFE 18px,#FCFCFE 36px);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .lang-band .bl{font-size:12.5px;color:var(--ink-3);font-weight:600;margin-right:4px}
+  .chip{font-size:13px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);
+     padding:6px 12px;border-radius:999px;animation:floaty 6s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+  .illus{font-size:10.5px;color:#9aa2b2;font-weight:700;letter-spacing:.04em;
+     background:#fff;border:1px solid var(--line);padding:2px 7px;border-radius:6px;display:inline-block}
+
+  /* ---------- PRE-CALL STUDIO ---------- */
+  .precall{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;margin-top:14px}
+  .preview{aspect-ratio:4/3;border-radius:var(--radius);background:linear-gradient(160deg,#2b3242,#1b2030);
+     position:relative;overflow:hidden;display:grid;place-items:center;color:#cfd6e6}
+  .preview .face{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#FFD9A8,#E89B68);
+     display:grid;place-items:center;font-size:42px}
+  .preview .pv-row{position:absolute;left:14px;right:14px;bottom:14px;display:flex;gap:8px;align-items:center}
+  .miclevel{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+  .miclevel i{display:block;height:100%;width:30%;background:var(--mint);border-radius:99px;transition:width .12s}
+  .pv-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(4px)}
+  .pv-btn.off{background:#B5524C}
+  .warn{margin-top:10px;background:var(--amber-soft);border:1px solid #F0DDB5;color:#8a6418;
+     padding:10px 12px;border-radius:12px;font-size:13px;display:none;gap:8px;align-items:center}
+  .warn.show{display:flex}
+
+  .setup{display:flex;flex-direction:column;gap:16px}
+  .mirror{background:var(--brand-soft);border:1px solid #D4E2FD;border-radius:14px;padding:14px 16px}
+  .mirror .ml{font-size:12px;color:var(--brand);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .mirror .mt{font-size:16px;margin-top:4px;font-weight:600}
+  .mirror .mt b{color:var(--brand)}
+  .seg{display:flex;background:var(--surface-2);border-radius:12px;padding:4px;gap:4px}
+  .seg button{flex:1;height:44px;border-radius:9px;font-weight:600;font-size:14px;color:var(--ink-2);transition:.15s;display:flex;flex-direction:column;justify-content:center;gap:1px}
+  .seg button small{font-weight:500;font-size:11px;color:var(--ink-3)}
+  .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .seg button[aria-pressed="true"] small{color:var(--mint)}
+
+  .checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .checklist li{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;background:var(--surface-2);font-size:14px;font-weight:500}
+  .checklist .ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:transparent;flex-shrink:0;transition:.2s}
+  .checklist li.done{background:var(--mint-soft)}
+  .checklist li.done .ck{background:var(--mint);border-color:var(--mint);color:#fff}
+  .checklist li.warnitem{background:var(--amber-soft)}
+  .checklist li.warnitem .ck{border-color:var(--amber);color:var(--amber)}
+  .checklist .hint{margin-left:auto;font-size:12px;color:var(--ink-3)}
+
+  /* ---------- MODAL ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(20,24,35,.45);backdrop-filter:blur(3px);
+     display:none;place-items:center;z-index:60;padding:20px}
+  .scrim.show{display:grid}
+  .modal{width:min(520px,100%);background:var(--surface);border-radius:22px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .modal .mhead{padding:24px 26px 6px}
+  .modal .ic{width:46px;height:46px;border-radius:14px;background:var(--mint-soft);color:var(--mint);display:grid;place-items:center;margin-bottom:12px}
+  .modal h3{margin:0 0 8px;font-size:20px;letter-spacing:-.01em}
+  .modal p{margin:0;color:var(--ink-2);font-size:14px}
+  .modal .body{padding:8px 26px 4px}
+  .modal ul{margin:14px 0 4px;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+  .modal ul li{margin:5px 0}
+  .modal .note{font-size:12px;color:var(--ink-3);margin-top:14px;padding:11px 13px;background:var(--surface-2);border-radius:11px}
+  .modal .mfoot{display:flex;gap:12px;padding:18px 26px 24px}
+  .modal .mfoot .btn{flex:1}
+
+  /* ---------- LIVE WORKSPACE ---------- */
+  #live{display:none;height:100%;flex-direction:column;background:#F7F8FA}
+  #live.show{display:flex}
+  .live-top{display:flex;align-items:center;gap:12px;padding:12px 18px;flex-shrink:0}
+  .live-top .room{font-weight:700;font-size:15px}
+  .live-top .sub{font-size:12px;color:var(--ink-3)}
+  .live-top .spacer{flex:1}
+  .health{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink-2);
+     background:var(--surface);border:1px solid var(--line);padding:7px 12px;border-radius:999px}
+  .health .pip{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+  .health.translating .pip{background:var(--amber);animation:breathe 1.8s ease-in-out infinite}
+  .health.degraded .pip{background:var(--amber)}
+
+  .stage{flex:1;display:flex;gap:14px;padding:0 16px 14px;min-height:0}
+  .canvas{flex:1;display:flex;align-items:center;justify-content:center;min-width:0}
+  .bubbles{display:grid;gap:26px;width:100%;max-width:880px;
+     grid-template-columns:repeat(2,1fr);place-items:center}
+  .bubble{position:relative;text-align:center;transition:.35s}
+  .bubble .ring{width:172px;height:172px;border-radius:50%;overflow:hidden;position:relative;margin:0 auto;
+     background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:62px;
+     box-shadow:0 8px 30px rgba(27,32,48,.10);transition:.35s;border:4px solid transparent}
+  .bubble.speaking .ring{border-color:var(--amber);box-shadow:0 0 0 6px var(--amber-soft),0 10px 34px rgba(230,162,60,.3);transform:scale(1.04)}
+  .bubble .nm{margin-top:12px;font-weight:600;font-size:14px}
+  .bubble .badge{display:inline-flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;font-weight:600;
+     color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+  .bubble .badge .vm{color:var(--mint)}
+  .bubble .badge .vm.neutral{color:var(--ink-3)}
+  /* breathing translate pulse */
+  .pulse{position:absolute;left:50%;top:178px;transform:translateX(-50%);display:none;
+     align-items:center;gap:8px;background:var(--amber-soft);border:1px solid #F0DDB5;color:#8a6418;
+     padding:6px 13px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;z-index:2}
+  .bubble.translating .pulse{display:inline-flex}
+  .pulse .bd{width:9px;height:9px;border-radius:50%;background:var(--amber);animation:breathe 1.8s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+  @media (prefers-reduced-motion:reduce){
+    .pulse .bd,.health .pip{animation:none!important}
+    .chip{animation:none}
+  }
+
+  /* drawer */
+  .drawer{width:0;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;
+     overflow:hidden;transition:width .28s ease;display:flex;flex-direction:column}
+  .drawer.open{width:340px}
+  .stage.transcript-forward .drawer.open{width:46%}
+  .dr-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .dr-head b{font-size:14px}
+  .dr-head .spacer{flex:1}
+  .dr-body{flex:1;overflow:auto;padding:14px 16px}
+  .seg-mini{display:flex;background:var(--surface-2);border-radius:9px;padding:3px;font-size:12px}
+  .seg-mini button{padding:6px 10px;border-radius:7px;font-weight:600;color:var(--ink-3)}
+  .seg-mini button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+
+  /* transcript lines */
+  .tline{margin-bottom:16px}
+  .tline .who{font-size:12px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:7px;margin-bottom:4px}
+  .tline .who .fl{font-size:10px;color:var(--ink-3);font-weight:600}
+  .tline .tgt{font-size:15px;color:var(--ink);line-height:1.5}
+  .tline .src{font-size:12.5px;color:var(--ink-3);margin-top:3px;font-style:italic}
+  .tline.typing .tgt{color:var(--ink-3)}
+  .tline.typing .tgt::after{content:"▍";animation:blink 1s steps(1) infinite;color:var(--amber)}
+  @keyframes blink{50%{opacity:0}}
+
+  /* participants + chat rows */
+  .prow{display:flex;align-items:center;gap:11px;padding:9px 0}
+  .prow .pa{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .prow .pn{flex:1;font-size:14px;font-weight:600}
+  .prow .pl{font-size:11px;color:var(--ink-2);background:var(--surface-2);padding:3px 8px;border-radius:7px}
+  .msg{margin-bottom:12px}
+  .msg b{font-size:12px;color:var(--ink-2)}
+  .msg p{margin:2px 0 0;font-size:14px}
+  .chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+  .chat-input input{flex:1;height:42px;border-radius:10px;border:1px solid var(--line);padding:0 12px}
+
+  /* control bar */
+  .controlbar{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;flex-shrink:0;flex-wrap:wrap}
+  .cb{width:52px;height:52px;border-radius:16px;background:var(--surface);border:1px solid var(--line);
+     display:grid;place-items:center;color:var(--ink-2);position:relative;transition:.15s}
+  .cb:hover{background:var(--surface-2)}
+  .cb.active{background:var(--brand-soft);color:var(--brand);border-color:#D4E2FD}
+  .cb.off{background:#FCEEED;color:#B5524C;border-color:#F0D6D4}
+  .cb.leave{background:#fff;color:#B5524C;border-color:#F0D6D4;width:auto;padding:0 20px;font-weight:600;gap:8px;display:flex}
+  .cb .cap{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--ink-3);white-space:nowrap}
+  .voicepill{display:flex;align-items:center;gap:8px;height:52px;padding:0 14px;border-radius:16px;
+     background:var(--mint-soft);border:1px solid #C9EBD9;color:#1f7a59;font-weight:600;font-size:13px}
+  .voicepill.neutral{background:var(--surface-2);border-color:var(--line);color:var(--ink-2)}
+  .voicepill .sw{width:34px;height:20px;border-radius:99px;background:var(--mint);position:relative;transition:.2s}
+  .voicepill.neutral .sw{background:var(--ink-3)}
+  .voicepill .sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+  .voicepill.neutral .sw i{left:16px}
+
+  /* degraded banner */
+  .degrade{display:none;align-items:center;gap:9px;margin:0 16px 8px;padding:10px 14px;border-radius:12px;
+     background:var(--amber-soft);border:1px solid #F0DDB5;color:#8a6418;font-size:13px;font-weight:500}
+  .degrade.show{display:flex}
+
+  /* toast */
+  .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+     background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:13.5px;font-weight:500;
+     box-shadow:var(--shadow-lg);z-index:80;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* settings */
+  .settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px}
+  .settings-grid .field{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .trustnote{margin-top:16px;padding:16px;border-radius:14px;background:var(--mint-soft);border:1px solid #C9EBD9;font-size:13.5px;color:#1f6e52}
+  .trustnote b{color:#155c43}
+
+  /* demo helper banner */
+  .demobar{display:flex;align-items:center;gap:10px;justify-content:center;font-size:12px;color:var(--ink-3);
+     background:#fff;border-top:1px solid var(--line);padding:8px;flex-shrink:0}
+  .demobar b{color:var(--ink-2)}
+  .demobar button{font-size:12px;font-weight:700;color:var(--brand)}
+
+  /* ---------- top nav + demo chip ---------- */
+  .topnav{display:flex;gap:4px;margin-left:10px}
+  .navlink{padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+  .navlink:hover{background:var(--surface-2)}
+  .navlink.active{background:var(--mint-soft);color:#1f7a59}
+  .demochip{font-size:11.5px;font-weight:700;color:#1f7a59;background:var(--mint-soft);
+     border:1px solid #C9EBD9;padding:5px 11px;border-radius:999px;letter-spacing:.01em}
+
+  /* ---------- 2x2 dashboard ---------- */
+  .home-grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;margin-top:14px}
+  .card-label{font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.09em}
+  .card-h{font-size:21px;letter-spacing:-.02em;margin:4px 0 0}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .live-chip{font-size:10.5px;font-weight:700;color:#fff;background:var(--ink);padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+  .live-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:#6ee7a8}
+  .ready-chip{font-size:11px;font-weight:700;color:#1f7a59;background:var(--mint-soft);padding:4px 11px;border-radius:999px}
+  .vm-pill{font-size:11.5px;font-weight:700;color:#8a6418;background:var(--amber-soft);border:1px solid #F0DDB5;padding:7px 12px;border-radius:12px;line-height:1.25;text-align:right}
+  .hero-card{grid-row:span 1}
+  .hero-card h1{font-size:30px;line-height:1.08;letter-spacing:-.03em;margin:8px 0 0;max-width:14ch}
+
+  /* current room mini bubbles */
+  .mini-row{display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap}
+  .mini{position:relative;text-align:center}
+  .mini .mb{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#EAF1E8,#D9E6D6);
+     display:grid;place-items:center;font-weight:700;font-size:15px;color:#3f5a3a;border:3px solid #fff;box-shadow:var(--shadow)}
+  .mini:first-child .mb{background:linear-gradient(135deg,#F4E9C9,#E7D49a)}
+  .mini .ml2{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;
+     background:var(--ink);color:#fff;padding:2px 6px;border-radius:999px;letter-spacing:.03em}
+  .room-meta{font-size:13px;color:var(--ink-3)}
+  .room-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px}
+
+  /* readiness toggle */
+  .switch{width:46px;height:26px;border-radius:999px;background:var(--ink-3);position:relative;transition:.2s;flex-shrink:0}
+  .switch[aria-checked="true"]{background:var(--mint)}
+  .switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+  .switch[aria-checked="true"] i{left:23px}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;
+     background:var(--surface-2);border-radius:12px;margin-top:4px;font-size:14px;font-weight:600}
+
+  /* scheduled rows */
+  .sched{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px}
+  .sched:hover{background:var(--surface-2)}
+  .sched .pin{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .sched .sm{flex:1;min-width:0}
+  .sched .sm b{font-size:14px;display:block}
+  .sched .sm span{font-size:12px;color:var(--ink-3)}
+  .sched.muted .sm b{color:var(--ink-3);font-weight:600}
+  .link-btn{font-size:13px;font-weight:700;color:var(--brand)}
+  .flexcol{display:flex;flex-direction:column;height:100%}
+
+  @media(max-width:980px){ .home-grid2{grid-template-columns:1fr} }
+  @media(max-width:760px){ .topnav{display:none} }
+  @media(max-width:900px){
+    .home-grid,.precall,.settings-grid{grid-template-columns:1fr}
+    .bubbles{grid-template-columns:1fr}
+    .bubble .ring{width:140px;height:140px;font-size:50px}
+    .stage{flex-direction:column}
+    .drawer.open,.stage.transcript-forward .drawer.open{width:100%;max-height:40vh}
+    .crumb{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ APP SHELL (non-call) ============ -->
+  <header class="appbar" id="appbar">
+    <div class="logo"><span class="dot"></span><span>RingRing<small>.now</small></span></div>
+    <nav class="topnav" id="topnav" aria-label="Primary">
+      <button class="navlink" data-nav="home">Dashboard</button>
+      <button class="navlink" data-nav="live">Live Room</button>
+      <button class="navlink" data-nav="settings">Trust &amp; Settings</button>
+    </nav>
+    <span class="spacer"></span>
+    <span class="demochip">Demo · illustrative only</span>
+    <button class="iconbtn" id="navSettings" title="Settings" aria-label="Settings">⚙</button>
+    <div class="avatar" title="You (illustrative)">CZ</div>
+  </header>
+
+  <!-- ============ ROUTED VIEWS ============ -->
+  <main class="view" id="view"></main>
+
+</div>
+
+<!-- ============ LIVE WORKSPACE (replaces shell chrome) ============ -->
+<section id="live">
+  <div class="live-top">
+    <div>
+      <div class="room">Open Room <span class="illus">ILLUSTRATIVE</span></div>
+      <div class="sub" id="liveSub">Waiting for others to join…</div>
+    </div>
+    <span class="spacer"></span>
+    <div class="health" id="health"><span class="pip"></span><span id="healthLabel">Listening</span></div>
+  </div>
+
+  <div class="degrade" id="degrade">⚠ Audio translation is limited right now. Captions are still available.</div>
+
+  <div class="stage" id="stage">
+    <div class="canvas">
+      <div class="bubbles" id="bubbles"><!-- populated by JS --></div>
+    </div>
+
+    <!-- Drawer: hosts Transcript / Participants / Chat / Dock one at a time -->
+    <aside class="drawer" id="drawer" aria-hidden="true">
+      <div class="dr-head">
+        <b id="drTitle">Transcript</b>
+        <span class="spacer"></span>
+        <div class="seg-mini" id="dualToggle" style="display:none">
+          <button data-dual="both" aria-pressed="true">Both</button>
+          <button data-dual="target" aria-pressed="false">Mine only</button>
+        </div>
+        <button class="iconbtn" id="drExpand" title="Transcript-forward view" aria-label="Toggle transcript-forward view" style="display:none">⤢</button>
+        <button class="iconbtn" id="drClose" aria-label="Close panel">✕</button>
+      </div>
+      <div class="dr-body" id="drBody"></div>
+      <div class="chat-input" id="chatInput" style="display:none">
+        <input id="chatField" placeholder="Message the room" aria-label="Chat message" />
+        <button class="btn primary" id="chatSend" style="height:42px;padding:0 16px">Send</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="controlbar">
+    <button class="cb active" id="cMic" data-cap="Mic"><span aria-hidden="true">🎙</span><span class="cap">Mic</span></button>
+    <button class="cb active" id="cCam" data-cap="Camera"><span aria-hidden="true">🎥</span><span class="cap">Camera</span></button>
+    <button class="cb" id="cShare"><span aria-hidden="true">🖥</span><span class="cap">Share</span></button>
+    <button class="cb" id="cCaptions"><span aria-hidden="true">💬</span><span class="cap">Transcript</span></button>
+    <button class="cb" id="cPeople"><span aria-hidden="true">👥</span><span class="cap">People</span></button>
+    <button class="cb" id="cChat"><span aria-hidden="true">✉</span><span class="cap">Chat</span></button>
+    <button class="cb" id="cDock"><span aria-hidden="true">⚙</span><span class="cap">Dock</span></button>
+    <button class="voicepill" id="voicePill" title="Voice mode — tap to toggle">
+      <span class="sw"><i></i></span><span id="voicePillLabel">Your voice</span>
+    </button>
+    <button class="cb leave" id="cLeave"><span aria-hidden="true">⤬</span> Leave</button>
+  </div>
+
+  <div class="demobar">
+    <b>Demo:</b> simulate the moment a guest speaks in another language
+    <button id="simSpeak">▶ Play translated reply</button>
+    <button id="simDegrade">⤓ Toggle degraded</button>
+  </div>
+</section>
+
+<!-- ============ VOICE CONSENT MODAL ============ -->
+<div class="scrim" id="consentScrim" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+  <div class="modal">
+    <div class="mhead">
+      <div class="ic" aria-hidden="true">🔊</div>
+      <h3 id="consentTitle">Use your own voice?</h3>
+      <p>RingRing.now can translate your speech so others hear it in their language, while keeping the natural feel of <b>your</b> voice.</p>
+    </div>
+    <div class="body">
+      <ul>
+        <li>Processing happens live, during the call.</li>
+        <li>It's optional — a clear, high-quality neutral voice works just as well.</li>
+        <li>You can switch to the neutral voice anytime, in one tap.</li>
+      </ul>
+      <div class="note">This choice is separate from your camera and microphone permissions. Data-handling specifics are shown only once verified. <span class="illus">PLACEHOLDER COPY</span></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn ghost" id="consentNeutral">Use a neutral voice</button>
+      <button class="btn mint" id="consentAllow">Allow my voice</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================================
+   The Open Room — working dashboard app (client-only demo).
+   State is real to the session; people/recents/transcript are ILLUSTRATIVE.
+   ========================================================================= */
+const LANGS = [
+  ["en","English","🇬🇧"],["es","Spanish","🇪🇸"],["zh","Mandarin","🇨🇳"],
+  ["fr","French","🇫🇷"],["de","German","🇩🇪"],["ja","Japanese","🇯🇵"],
+  ["pt","Portuguese","🇵🇹"],["ar","Arabic","🇸🇦"]
+];
+const nameOf = c => (LANGS.find(l=>l[0]===c)||["","—"])[1];
+
+const state = {
+  view:"home",
+  joinPath:false,
+  mic:false, cam:false, lang:false, consent:false,   // readiness items
+  spoken:"en", listening:"es", caption:"es",
+  voiceMode:null,                  // 'preserve' | 'neutral'
+  callVoiceMode:"preserve",
+  defaults:{spoken:"en",listening:"es",caption:"es",voiceMode:"preserve"},
+  drawer:null,                      // 'transcript'|'people'|'chat'|'dock'
+  dual:"both",
+  degraded:false,
+  transcriptForward:false,
+};
+
+const view = document.getElementById('view');
+const $ = (id)=>document.getElementById(id);
+function setNavActive(v){const map={home:'home',precall:'home',settings:'settings',live:'live'};
+  document.querySelectorAll('#topnav .navlink').forEach(b=>b.classList.toggle('active',b.dataset.nav===map[v]));}
+// wire top nav once
+document.querySelectorAll('#topnav .navlink').forEach(b=>b.onclick=()=>{
+  const n=b.dataset.nav;
+  if(n==='live'){ state.callVoiceMode=state.voiceMode||state.defaults.voiceMode; go('live'); }
+  else go(n);
+});
+
+/* ---------- tiny helpers ---------- */
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function langOptions(sel){return LANGS.map(([c,n])=>`<option value="${c}" ${c===sel?'selected':''}>${n}</option>`).join('');}
+
+/* =========================================================================
+   ROUTER
+   ========================================================================= */
+function go(v){ state.view=v; render(); }
+function render(){
+  // live workspace is a separate full-screen layer
+  const liveEl=$('live'); const appEl=$('app');
+  if(state.view==='live'){ liveEl.classList.add('show'); appEl.style.display='none'; renderLive(); return; }
+  liveEl.classList.remove('show'); appEl.style.display='flex';
+  setNavActive(state.view);
+  if(state.view==='home') renderHome();
+  else if(state.view==='precall') renderPreCall();
+  else if(state.view==='settings') renderSettings();
+}
+
+/* =========================================================================
+   HOME — workspace dashboard (NOT a landing page)
+   ========================================================================= */
+function renderHome(){
+  if(!state.voiceMode) state.voiceMode=state.defaults.voiceMode;
+  const preserved = state.voiceMode!=='neutral';
+  view.innerHTML = `
+   <div class="wrap">
+     <div class="home-grid2">
+
+       <!-- Workspace / Start -->
+       <section class="card pad hero-card flexcol">
+         <div class="card-head">
+           <div><div class="card-label">Workspace dashboard</div>
+             <h1>Start or join a global conversation</h1></div>
+           <div class="vm-pill" id="vmPill">Voice mode:<br><b>${preserved?'Preserved':'Neutral'}</b></div>
+         </div>
+         <div class="joinrow" style="margin-top:22px;align-items:center">
+           <button class="btn primary lg" id="startBtn">Start a Conversation</button>
+           <div class="field" style="flex:1">
+             <label for="joinField">Join with link or code</label>
+             <input id="joinField" placeholder="ringring.now/room/sales-jp" />
+             <div class="err" id="joinErr">That link doesn't look right.</div>
+           </div>
+           <button class="btn ghost lg" id="joinBtn">Join</button>
+         </div>
+         <div style="font-size:12px;color:var(--ink-3);margin-top:8px">Routes into the live room in this demo prototype.</div>
+         <div class="mini-row" style="margin-top:18px;gap:8px">
+           ${LANGS.slice(0,6).map(([c,n])=>`<span class="chip">${n}</span>`).join('')}
+         </div>
+       </section>
+
+       <!-- Current Room -->
+       <section class="card pad flexcol">
+         <div class="card-head">
+           <div><div class="card-label">Current room</div><h2 class="card-h">International Sales Standup</h2></div>
+           <span class="live-chip">Live</span>
+         </div>
+         <div class="mini-row">
+           ${[['CZ','en'],['AK','ja'],['ML','es'],['SN','fr']].map(([i,l])=>`
+             <div class="mini"><div class="mb">${i}</div><span class="ml2">${l.toUpperCase()}</span></div>`).join('')}
+         </div>
+         <div class="room-foot">
+           <span class="room-meta">4 participants · 4 listening languages</span>
+           <button class="btn ghost" id="openRoom">Open Room</button>
+         </div>
+       </section>
+
+       <!-- Readiness -->
+       <section class="card pad flexcol">
+         <div class="card-head">
+           <div><div class="card-label">Readiness</div><h2 class="card-h">Language and voice settings</h2></div>
+           <span class="ready-chip">Ready</span>
+         </div>
+         <div class="field" style="margin-top:16px"><label for="hSpoken">Spoken language</label>
+           <select id="hSpoken">${langOptions(state.spoken)}</select></div>
+         <div class="field" style="margin-top:12px"><label for="hListening">Listening language</label>
+           <select id="hListening">${langOptions(state.listening)}</select></div>
+         <div class="toggle-row">Voice preservation
+           <button class="switch" id="hVoice" role="switch" aria-checked="${preserved}" aria-label="Voice preservation"><i></i></button></div>
+         <div class="mirror" style="margin-top:14px"><div class="mt" id="hMirror">You speak <b>${nameOf(state.spoken)}</b> · others hear theirs.</div></div>
+       </section>
+
+       <!-- Scheduled -->
+       <section class="card pad flexcol">
+         <div class="card-head">
+           <div><div class="card-label">Scheduled</div><h2 class="card-h">Upcoming connections</h2></div>
+           <button class="link-btn" id="schedNew">New</button>
+         </div>
+         <div style="margin-top:10px">
+           ${schedRow('#E6A23C','Partner intro · Mexico','Today · Spanish ↔ English')}
+           ${schedRow('#33B98A','Support review · Tokyo','Tomorrow · Japanese ↔ English')}
+           <div class="sched muted"><span class="pin" style="background:var(--ink-3)"></span>
+             <div class="sm"><b>No more scheduled rooms</b><span>Start one anytime.</span></div></div>
+         </div>
+       </section>
+
+     </div>
+   </div>`;
+
+  $('startBtn').onclick=()=>{ state.joinPath=false; go('precall'); };
+  $('joinBtn').onclick=()=>{ const v=$('joinField').value.trim();
+     if(v.length<4){ $('joinErr').classList.add('show'); return; } state.callVoiceMode=state.voiceMode; go('live'); };
+  $('joinField').oninput=()=>$('joinErr').classList.remove('show');
+  $('openRoom').onclick=()=>{ state.callVoiceMode=state.voiceMode; go('live'); };
+  $('schedNew').onclick=()=>{ state.joinPath=false; go('precall'); };
+  document.querySelectorAll('.schedOpen').forEach(b=>b.onclick=()=>{ state.joinPath=true; go('precall'); });
+
+  // Readiness (dashboard) — feeds Pre-Call + Live
+  $('hSpoken').onchange=e=>{ state.spoken=e.target.value; $('hMirror').innerHTML=`You speak <b>${nameOf(state.spoken)}</b> · others hear theirs.`; };
+  $('hListening').onchange=e=>{ state.listening=e.target.value; };
+  $('hVoice').onclick=()=>{
+    const on=$('hVoice').getAttribute('aria-checked')!=='true';
+    $('hVoice').setAttribute('aria-checked',on);
+    state.voiceMode=on?'preserve':'neutral'; state.consent=true;
+    $('vmPill').innerHTML='Voice mode:<br><b>'+(on?'Preserved':'Neutral')+'</b>';
+    toast(on?'Voice preservation on — you can switch anytime':'Now using a neutral voice');
+  };
+}
+function schedRow(color,title,meta){
+  return `<div class="sched"><span class="pin" style="background:${color}"></span>
+   <div class="sm"><b>${title}</b><span>${meta}</span></div>
+   <button class="link-btn schedOpen">Open</button></div>`;
+}
+function resetReadiness(){ state.mic=false;state.cam=false;state.lang=false;state.consent=false;
+  state.spoken=state.defaults.spoken;state.listening=state.defaults.listening;state.caption=state.defaults.caption;state.voiceMode=null; }
+
+/* =========================================================================
+   PRE-CALL STUDIO — trust ceremony
+   ========================================================================= */
+function renderPreCall(){
+  view.innerHTML = `
+   <div class="wrap">
+     <div class="greeting">${state.joinPath?'Joining a room':'New conversation'}</div>
+     <h1 style="margin:6px 0 0;font-size:24px;letter-spacing:-.02em">Ready to join</h1>
+     <div class="precall">
+       <div>
+         <div class="preview">
+           <div class="face" id="pvFace">🙂</div>
+           <div class="pv-row">
+             <button class="pv-btn" id="pvMic" title="Microphone">🎙</button>
+             <div class="miclevel"><i id="micBar"></i></div>
+             <button class="pv-btn" id="pvCam" title="Camera">🎥</button>
+           </div>
+         </div>
+         <div class="warn" id="pvWarn">⚠ <span>We can't detect your microphone yet. Turn it on to be heard.</span></div>
+         <p style="font-size:12.5px;color:var(--ink-3);margin-top:12px">Tip: good mic input keeps translation clear. <span class="illus">DEMO PREVIEW</span></p>
+       </div>
+
+       <div class="setup">
+         <div class="mirror">
+           <div class="ml">Language mirror</div>
+           <div class="mt" id="mirrorText">You speak <b>${nameOf(state.spoken)}</b> · others hear you in <b>their</b> language</div>
+         </div>
+
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+           <div class="field"><label for="spoken">You speak</label><select id="spoken">${langOptions(state.spoken)}</select></div>
+           <div class="field"><label for="listening">You hear</label><select id="listening">${langOptions(state.listening)}</select></div>
+         </div>
+         <div class="field"><label for="caption">Caption language</label><select id="caption">${langOptions(state.caption)}</select></div>
+
+         <div class="field">
+           <label>Voice mode</label>
+           <div class="seg" role="group" aria-label="Voice mode">
+             <button id="vmPreserve" aria-pressed="${state.voiceMode==='preserve'}">Preserve my voice<small>keeps your natural tone</small></button>
+             <button id="vmNeutral" aria-pressed="${state.voiceMode==='neutral'}">Use a neutral voice<small>clear default voice</small></button>
+           </div>
+         </div>
+
+         <ul class="checklist" id="checklist">
+           ${ckItem('mic','Microphone ready')}
+           ${ckItem('cam','Camera ready')}
+           ${ckItem('lang','Languages chosen')}
+           ${ckItem('consent','Voice choice made')}
+         </ul>
+
+         <button class="btn primary lg" id="joinMeeting" disabled>Join Meeting</button>
+         <div style="font-size:12.5px;color:var(--ink-3);text-align:center" id="joinHint">Finish setup to join.</div>
+       </div>
+     </div>
+     <div style="margin-top:18px"><button class="btn ghost" id="backHome">← Back</button></div>
+   </div>`;
+
+  // device toggles
+  let micAnim;
+  function setMic(on){ state.mic=on; $('pvMic').classList.toggle('off',!on);
+    if(on){ micAnim=setInterval(()=>{$('micBar').style.width=(20+Math.random()*70)+'%';},140);} else {clearInterval(micAnim);$('micBar').style.width='0%';}
+    refreshReadiness(); }
+  function setCam(on){ state.cam=on; $('pvCam').classList.toggle('off',!on); $('pvFace').textContent=on?'🙂':'📷'; refreshReadiness(); }
+  $('pvMic').onclick=()=>setMic(!state.mic);
+  $('pvCam').onclick=()=>setCam(!state.cam);
+
+  // languages
+  $('spoken').onchange=e=>{state.spoken=e.target.value;updateMirror();markLang();};
+  $('listening').onchange=e=>{state.listening=e.target.value;markLang();};
+  $('caption').onchange=e=>{state.caption=e.target.value;markLang();};
+  function markLang(){ state.lang=true; refreshReadiness(); }
+  function updateMirror(){ $('mirrorText').innerHTML=`You speak <b>${nameOf(state.spoken)}</b> · others hear you in <b>their</b> language`; }
+
+  // voice mode
+  $('vmPreserve').onclick=()=>{ openConsent(); };
+  $('vmNeutral').onclick=()=>{ state.voiceMode='neutral'; state.consent=true; syncVM(); refreshReadiness(); toast('Neutral voice selected'); };
+  function syncVM(){ $('vmPreserve').setAttribute('aria-pressed',state.voiceMode==='preserve'); $('vmNeutral').setAttribute('aria-pressed',state.voiceMode==='neutral'); }
+  window._afterConsent=(allowed)=>{ state.voiceMode=allowed?'preserve':'neutral'; state.consent=true; syncVM(); refreshReadiness(); };
+
+  $('backHome').onclick=()=>go('home');
+  // Demo: Join Meeting is available by default.
+  $('joinMeeting').onclick=()=>{ state.callVoiceMode=state.voiceMode||state.defaults.voiceMode; go('live'); };
+
+  // Demo: arrive ready so the room is one click away.
+  if(!state.voiceMode) state.voiceMode=state.defaults.voiceMode;
+  state.mic=true; state.cam=true; state.consent=true;
+  state.lang = !!(state.spoken && state.listening);
+  refreshReadiness();
+  function refreshReadiness(){
+    [['mic',state.mic],['cam',state.cam],['lang',state.lang],['consent',state.consent]].forEach(([k,v])=>{
+      const li=document.querySelector(`#ck-${k}`); if(!li)return; li.classList.toggle('done',v); li.classList.remove('warnitem');
+      const hint=li.querySelector('.hint'); if(hint) hint.textContent=v?'✓':'';
+    });
+    $('pvWarn').classList.toggle('show', !state.mic);
+    if(!state.mic){const li=$('ck-mic'); if(li)li.classList.add('warnitem');}
+    $('joinMeeting').disabled=false;            // demo: Join always available
+    $('joinHint').textContent='Ready to join.';
+    $('joinHint').style.color='var(--mint)';
+  }
+}
+function ckItem(k,label){return `<li id="ck-${k}"><span class="ck" aria-hidden="true">✓</span>${label}<span class="hint"></span></li>`;}
+function readinessComplete(){return state.mic&&state.cam&&state.lang&&state.consent;}
+
+/* ---------- Consent modal ---------- */
+function openConsent(){const s=$('consentScrim');s.classList.add('show');setTimeout(()=>$('consentAllow').focus(),30);}
+function closeConsent(){$('consentScrim').classList.remove('show');}
+$('consentAllow').onclick=()=>{closeConsent();window._afterConsent&&window._afterConsent(true);toast('Your voice is on — you can switch anytime');};
+$('consentNeutral').onclick=()=>{closeConsent();window._afterConsent&&window._afterConsent(false);toast('Neutral voice selected');};
+$('consentScrim').addEventListener('keydown',e=>{ if(e.key==='Escape'){/* must choose — nudge, don't silently dismiss */ toast('Pick a voice option to continue'); $('consentNeutral').focus(); }});
+
+/* =========================================================================
+   SETTINGS
+   ========================================================================= */
+function renderSettings(){
+  view.innerHTML=`
+   <div class="wrap">
+     <div class="greeting">Preferences</div>
+     <h1 style="margin:6px 0 0;font-size:24px;letter-spacing:-.02em">Trust & defaults</h1>
+     <div class="settings-grid">
+       <div class="field"><label>Default — you speak</label><select id="dSpoken">${langOptions(state.defaults.spoken)}</select></div>
+       <div class="field"><label>Default — you hear</label><select id="dListening">${langOptions(state.defaults.listening)}</select></div>
+       <div class="field"><label>Default — captions</label><select id="dCaption">${langOptions(state.defaults.caption)}</select></div>
+       <div class="field"><label>Default voice mode</label><select id="dVoice">
+          <option value="preserve" ${state.defaults.voiceMode==='preserve'?'selected':''}>Preserve my voice</option>
+          <option value="neutral" ${state.defaults.voiceMode==='neutral'?'selected':''}>Use a neutral voice</option>
+       </select></div>
+     </div>
+     <div class="trustnote">
+       <b>Your voice stays yours.</b> Voice preservation is always opt-in, shown clearly in every call, and revocable in one tap.
+       Retention, encryption, and compliance details are shown here only once independently verified. <span class="illus">PLACEHOLDER — needs validation</span>
+     </div>
+     <div style="margin-top:18px;display:flex;gap:12px">
+       <button class="btn ghost" id="sBack">← Back</button>
+       <button class="btn primary" id="sSave">Save defaults</button>
+     </div>
+   </div>`;
+  $('sBack').onclick=()=>go('home');
+  $('sSave').onclick=()=>{
+    state.defaults={spoken:$('dSpoken').value,listening:$('dListening').value,caption:$('dCaption').value,voiceMode:$('dVoice').value};
+    toast('Defaults saved');
+  };
+}
+$('navSettings').onclick=()=>go('settings');
+
+/* =========================================================================
+   LIVE WORKSPACE
+   ========================================================================= */
+const PEOPLE=[ // [ILLUSTRATIVE ONLY]
+  {id:'you',name:'You',emoji:'🙂',lang:'en',you:true},
+  {id:'sofia',name:'Sofía',emoji:'👩🏽',lang:'es'},
+  {id:'kenji',name:'Kenji',emoji:'🧑🏻',lang:'ja'},
+  {id:'amara',name:'Amara',emoji:'👩🏾',lang:'fr'},
+];
+let joinTimers=[];
+function renderLive(){
+  $('liveSub').textContent='Waiting for others to join…';
+  $('voicePillLabel').textContent = state.callVoiceMode==='preserve'?'Your voice':'Neutral voice';
+  $('voicePill').classList.toggle('neutral',state.callVoiceMode!=='preserve');
+  // start with just you, then guests "join" (empty → populated state)
+  let present=[PEOPLE[0]];
+  paintBubbles(present);
+  joinTimers.forEach(clearTimeout); joinTimers=[];
+  [1,2,3].forEach((i,idx)=>{ joinTimers.push(setTimeout(()=>{ present.push(PEOPLE[i]); paintBubbles(present);
+     $('liveSub').textContent=`${present.length} people · ${[...new Set(present.map(p=>p.lang))].map(nameOf).join(', ')}`;
+  },700+idx*900)); });
+  // default: transcript drawer hint closed
+  closeDrawer();
+  setHealth('idle');
+}
+function paintBubbles(present){
+  $('bubbles').innerHTML = present.map(p=>`
+    <div class="bubble" id="b-${p.id}">
+      <div class="ring">${p.emoji}</div>
+      <div class="pulse"><span class="bd"></span> Wait — translating…</div>
+      <div class="nm">${p.name}${p.you?' (you)':''}</div>
+      <div class="badge">${(LANGS.find(l=>l[0]===p.lang)||['','',''])[2]} ${nameOf(p.lang)}
+        ${p.you?`<span class="vm ${state.callVoiceMode!=='preserve'?'neutral':''}" id="youVM">· ${state.callVoiceMode==='preserve'?'your voice':'neutral'}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+function setHealth(mode){
+  const h=$('health'),l=$('healthLabel');
+  h.classList.remove('translating','degraded');
+  if(mode==='translating'){h.classList.add('translating');l.textContent='Translating…';}
+  else if(mode==='degraded'){h.classList.add('degraded');l.textContent='Captions only';}
+  else l.textContent='Listening';
+}
+
+/* ----- drawer management (one panel at a time) ----- */
+function openDrawer(kind){
+  state.drawer=kind; const d=$('drawer'); d.classList.add('open'); d.setAttribute('aria-hidden','false');
+  $('dualToggle').style.display = kind==='transcript'?'flex':'none';
+  $('drExpand').style.display = kind==='transcript'?'grid':'none';
+  $('chatInput').style.display = kind==='chat'?'flex':'none';
+  $('drTitle').textContent={transcript:'Transcript',people:'Participants',chat:'Chat',dock:'Language & voice'}[kind];
+  ['cCaptions','cPeople','cChat','cDock'].forEach(id=>$(id).classList.remove('active'));
+  ({transcript:'cCaptions',people:'cPeople',chat:'cChat',dock:'cDock'})[kind] && $(({transcript:'cCaptions',people:'cPeople',chat:'cChat',dock:'cDock'})[kind]).classList.add('active');
+  drawBody(kind);
+}
+function closeDrawer(){ state.drawer=null; const d=$('drawer'); d.classList.remove('open'); d.setAttribute('aria-hidden','true');
+  $('stage').classList.remove('transcript-forward'); state.transcriptForward=false; $('drExpand').setAttribute('aria-pressed','false');
+  ['cCaptions','cPeople','cChat','cDock'].forEach(id=>$(id).classList.remove('active')); }
+$('drClose').onclick=closeDrawer;
+$('drExpand').onclick=()=>{ state.transcriptForward=!state.transcriptForward;
+  $('stage').classList.toggle('transcript-forward',state.transcriptForward);
+  $('drExpand').setAttribute('aria-pressed',state.transcriptForward);
+  toast(state.transcriptForward?'Transcript-forward view':'Standard view'); };
+function toggleDrawer(kind){ state.drawer===kind?closeDrawer():openDrawer(kind); }
+
+$('cCaptions').onclick=()=>toggleDrawer('transcript');
+$('cPeople').onclick=()=>toggleDrawer('people');
+$('cChat').onclick=()=>toggleDrawer('chat');
+$('cDock').onclick=()=>toggleDrawer('dock');
+
+let transcript=[]; // [ILLUSTRATIVE ONLY]
+function drawBody(kind){
+  const b=$('drBody');
+  if(kind==='transcript'){
+    b.innerHTML = transcript.length? transcript.map(tline).join('') :
+      `<div style="color:var(--ink-3);font-size:14px;text-align:center;padding:30px 10px">Your conversation will appear here.</div>`;
+    b.scrollTop=b.scrollHeight;
+  } else if(kind==='people'){
+    b.innerHTML = PEOPLE.map(p=>`<div class="prow"><div class="pa">${p.emoji}</div>
+       <div class="pn">${p.name}${p.you?' (you)':''}</div>
+       <div class="pl">${nameOf(p.lang)}</div></div>`).join('');
+  } else if(kind==='chat'){
+    b.innerHTML = `<div class="msg"><b>Sofía</b><p>¡Hola a todos! 👋</p></div>
+       <div style="color:var(--ink-3);font-size:12px">Chat is illustrative.</div>`;
+  } else if(kind==='dock'){
+    b.innerHTML = `
+      <div class="field" style="margin-bottom:14px"><label>Voice mode</label>
+        <div class="seg" role="group">
+          <button id="dkPreserve" aria-pressed="${state.callVoiceMode==='preserve'}">Your voice</button>
+          <button id="dkNeutral" aria-pressed="${state.callVoiceMode!=='preserve'}">Neutral</button>
+        </div></div>
+      <div class="field" style="margin-bottom:14px"><label>Caption language</label><select id="dkCap">${langOptions(state.caption)}</select></div>
+      <div class="field"><label>Original voice under translation <span class="illus">if supported</span></label>
+        <input type="range" min="0" max="40" value="15" id="dkBalance" disabled style="opacity:.5"/>
+        <small style="color:var(--ink-3);font-size:11.5px">Balance control appears when supported by your connection.</small>
+      </div>`;
+    $('dkPreserve').onclick=()=>setCallVoice('preserve');
+    $('dkNeutral').onclick=()=>setCallVoice('neutral');
+    $('dkCap').onchange=e=>{state.caption=e.target.value;toast('Caption language updated');};
+  }
+}
+function tline(t){
+  return `<div class="tline ${t.typing?'typing':''}">
+     <div class="who">${t.name} <span class="fl">${nameOf(t.from)} → ${nameOf(t.to)}</span></div>
+     <div class="tgt">${t.target}</div>
+     ${(state.dual==='both'&&t.source)?`<div class="src">“${t.source}”</div>`:''}
+   </div>`;
+}
+document.querySelectorAll('#dualToggle button').forEach(btn=>btn.onclick=()=>{
+  state.dual=btn.dataset.dual;
+  document.querySelectorAll('#dualToggle button').forEach(b=>b.setAttribute('aria-pressed',b===btn));
+  if(state.drawer==='transcript')drawBody('transcript');
+});
+
+/* ----- voice toggle (one-tap revoke) ----- */
+function setCallVoice(mode){
+  state.callVoiceMode=mode;
+  $('voicePill').classList.toggle('neutral',mode!=='preserve');
+  $('voicePillLabel').textContent= mode==='preserve'?'Your voice':'Neutral voice';
+  const yv=$('youVM'); if(yv){yv.textContent='· '+(mode==='preserve'?'your voice':'neutral');yv.classList.toggle('neutral',mode!=='preserve');}
+  if(state.drawer==='dock')drawBody('dock');
+  toast(mode==='preserve'?'Now using your voice':'Now using Neutral Voice');
+}
+$('voicePill').onclick=()=>setCallVoice(state.callVoiceMode==='preserve'?'neutral':'preserve');
+
+/* ----- control bar basics ----- */
+$('cMic').onclick=()=>$('cMic').classList.toggle('off');
+$('cCam').onclick=()=>$('cCam').classList.toggle('off');
+$('cShare').onclick=()=>{ $('cShare').classList.toggle('active'); toast('Screen share is illustrative in this demo'); };
+$('cLeave').onclick=()=>{ if(confirm('Leave this conversation?')){ joinTimers.forEach(clearTimeout); go('home'); } };
+
+/* ----- chat send ----- */
+$('chatSend').onclick=()=>{const f=$('chatField');if(!f.value.trim())return;
+  $('drBody').innerHTML+=`<div class="msg"><b>You</b><p>${f.value.replace(/</g,'&lt;')}</p></div>`;f.value='';$('drBody').scrollTop=$('drBody').scrollHeight;};
+$('chatField')&&$('chatField').addEventListener('keydown',e=>{if(e.key==='Enter')$('chatSend').click();});
+
+/* ----- THE AHA MOMENT: speak → pulse → translated reply → transcript ----- */
+function simulateSpeak(){
+  const speaker=PEOPLE[1]; // Sofía (es) [ILLUSTRATIVE]
+  const b=$('b-'+speaker.id); if(!b)return;
+  if(!state.drawer) openDrawer('transcript');
+  b.classList.add('speaking','translating');
+  setHealth('translating');
+  // live-typing line
+  const line={name:speaker.name,from:speaker.lang,to:state.listening,
+     target:(state.listening==='en'?'So glad we can finally talk like this':'Me alegra que por fin podamos hablar así'),
+     source:'Me alegra que por fin podamos hablar así', typing:true};
+  transcript.push(line); if(state.drawer==='transcript')drawBody('transcript');
+  setTimeout(()=>{ // resolve grey → locked
+    b.classList.remove('translating');
+    line.typing=false; if(state.drawer==='transcript')drawBody('transcript');
+    setHealth('idle');
+    setTimeout(()=>b.classList.remove('speaking'),900);
+    toast('Heard in '+nameOf(state.listening)+(state.callVoiceMode==='preserve'?' — in Sofía’s voice':''));
+  },2200);
+}
+$('simSpeak').onclick=simulateSpeak;
+$('simDegrade').onclick=()=>{
+  state.degraded=!state.degraded;
+  $('degrade').classList.toggle('show',state.degraded);
+  setHealth(state.degraded?'degraded':'idle');
+};
+
+/* boot */
+render();
+</script>
+</body>
+</html>
