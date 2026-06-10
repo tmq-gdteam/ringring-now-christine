@@ -60,8 +60,10 @@
   .wrap{max-width:1080px;margin:0 auto;padding:34px 24px 60px}
 
   /* ---------- Buttons ---------- */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:46px;padding:0 22px;
-    border-radius:12px;font-weight:600;font-size:15px;background:var(--surface-2);color:var(--ink);transition:.15s}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:46px;padding:0 24px;
+    border-radius:999px;font-weight:600;font-size:15px;background:var(--surface-2);color:var(--ink);transition:.15s}
+  /* SVG flag icons — always paired with a text label */
+  .flag{width:19px;height:14px;border-radius:3px;object-fit:cover;box-shadow:0 0 0 1px rgba(0,0,0,.08);vertical-align:-2px;display:inline-block;flex-shrink:0}
   .btn:hover{background:#E9ECF1}
   .btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 18px rgba(236,100,80,.30)}
   .btn.primary:hover{background:#dc5340}
@@ -133,7 +135,7 @@
      position:relative;overflow:hidden;display:grid;place-items:center;color:#cfd6e6}
   .preview .face{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#FFD9A8,#E89B68);
      display:grid;place-items:center;font-size:42px;overflow:hidden}
-  .mb img,.ring img,.preview .face img{width:100%;height:100%;object-fit:cover;display:block}
+  .mb img,.ring img,.preview .face img,.prow .pa img{width:100%;height:100%;object-fit:cover;display:block}
   .preview .pv-row{position:absolute;left:14px;right:14px;bottom:14px;display:flex;gap:8px;align-items:center}
   .miclevel{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
   .miclevel i{display:block;height:100%;width:30%;background:var(--mint);border-radius:99px;transition:width .12s}
@@ -199,7 +201,7 @@
   .bubble{position:relative;text-align:center;transition:.35s}
   .bubble .ring{width:172px;height:172px;border-radius:50%;overflow:hidden;position:relative;margin:0 auto;
      background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:62px;
-     box-shadow:0 8px 30px rgba(27,32,48,.10);transition:.35s;border:4px solid transparent}
+     box-shadow:0 8px 30px rgba(27,32,48,.10);transition:.35s;border:4px solid var(--accent,#F0DDB5)}
   .bubble.speaking .ring{border-color:var(--amber);box-shadow:0 0 0 6px var(--amber-soft),0 10px 34px rgba(230,162,60,.3);transform:scale(1.04)}
   .bubble .nm{margin-top:12px;font-weight:600;font-size:14px}
   .bubble .badge{display:inline-flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;font-weight:600;
@@ -234,7 +236,8 @@
   /* transcript lines */
   .tline{margin-bottom:16px}
   .tline .who{font-size:12px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:7px;margin-bottom:4px}
-  .tline .who .fl{font-size:10px;color:var(--ink-3);font-weight:600}
+  .tline .who .fl{font-size:10px;color:var(--ink-3);font-weight:600;display:inline-flex;align-items:center;gap:4px}
+  .tline .who .fl .flag{width:14px;height:10px}
   .tline .tgt{font-size:15px;color:var(--ink);line-height:1.5}
   .tline .src{font-size:12.5px;color:var(--ink-3);margin-top:3px;font-style:italic}
   .tline.typing .tgt{color:var(--ink-3)}
@@ -243,9 +246,9 @@
 
   /* participants + chat rows */
   .prow{display:flex;align-items:center;gap:11px;padding:9px 0}
-  .prow .pa{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .prow .pa{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:18px;flex-shrink:0;overflow:hidden}
   .prow .pn{flex:1;font-size:14px;font-weight:600}
-  .prow .pl{font-size:11px;color:var(--ink-2);background:var(--surface-2);padding:3px 8px;border-radius:7px}
+  .prow .pl{font-size:11px;color:var(--ink-2);background:var(--surface-2);padding:4px 9px;border-radius:8px;display:inline-flex;align-items:center;gap:6px}
   .msg{margin-bottom:12px}
   .msg b{font-size:12px;color:var(--ink-2)}
   .msg p{margin:2px 0 0;font-size:14px}
@@ -314,8 +317,8 @@
   .hero-strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px;
      background:rgba(255,255,255,.55);border:1px solid #F3E2D6;border-radius:14px;padding:13px 16px}
   .hero-strip .lead{font-size:13px;font-weight:700;color:var(--brand-ink);margin-right:2px}
-  .lchip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#6b4a2a;
-     background:#fff;border:1px solid #F0DDB5;padding:6px 12px;border-radius:999px;box-shadow:0 1px 2px rgba(160,110,40,.06)}
+  .lchip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#5a4636;
+     background:#fff;border:1px solid rgba(0,0,0,.05);padding:6px 13px;border-radius:999px;box-shadow:0 1px 2px rgba(160,110,40,.05)}
   .hero-mirror{margin-top:18px}
   .home-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
   @media(max-width:980px){ .home-grid3{grid-template-columns:1fr} .hero2 h1{font-size:28px} }
@@ -334,8 +337,9 @@
   .mini .mb{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#EAF1E8,#D9E6D6);
      display:grid;place-items:center;font-weight:700;font-size:15px;color:#3f5a3a;border:3px solid #fff;box-shadow:var(--shadow)}
   .mini:first-child .mb{background:linear-gradient(135deg,#F4E9C9,#E7D49a)}
-  .mini .ml2{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;
-     background:var(--ink);color:#fff;padding:2px 6px;border-radius:999px;letter-spacing:.03em}
+  .mini .ml2{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+     background:#fff;padding:2px;border-radius:999px;box-shadow:0 1px 3px rgba(27,32,48,.18);display:inline-flex}
+  .mini .ml2 .flag{width:18px;height:13px}
   .room-meta{font-size:13px;color:var(--ink-3)}
   .room-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px}
 
@@ -487,6 +491,18 @@ const LANGS = [
   ["pt","Portuguese","🇵🇹"],["ar","Arabic","🇸🇦"]
 ];
 const nameOf = c => (LANGS.find(l=>l[0]===c)||["","—"])[1];
+// language → ISO country code for SVG flags (flagcdn). Always shown WITH a text label.
+const CC={en:'gb',es:'es',zh:'cn',fr:'fr',de:'de',ja:'jp',pt:'pt',ar:'sa',ko:'kr',tl:'ph'};
+const flag = c => `<img class="flag" src="https://flagcdn.com/${CC[c]||'un'}.svg" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`;
+// website "voice/language" accent set — soft per-speaker hues, languages as equals
+const ACC=[
+  {soft:'#FBE3D6',ring:'#F0C3A6'}, // peach
+  {soft:'#EAE3F7',ring:'#C9BCEF'}, // lavender
+  {soft:'#DCEFE0',ring:'#A6D4B4'}, // green
+  {soft:'#F7EECB',ring:'#E4D283'}, // yellow
+  {soft:'#FCE7E1',ring:'#F2B4A4'}, // coral-soft
+  {soft:'#DDEaF5',ring:'#AFcDE6'}, // sky
+];
 
 const state = {
   view:"home",
@@ -558,7 +574,7 @@ function renderHome(){
        <div style="font-size:12px;color:var(--ink-3);margin-top:8px">Routes into the live room in this demo prototype.</div>
        <div class="hero-strip">
          <span class="lead">This room speaks every language</span>
-         ${LANGS.slice(0,7).map(([c,n,f])=>`<span class="lchip">${f} ${n}</span>`).join('')}
+         ${LANGS.slice(0,7).map(([c,n],i)=>`<span class="lchip" style="background:${ACC[i%ACC.length].soft}">${flag(c)} ${n}</span>`).join('')}
        </div>
        <div class="mirror hero-mirror"><div class="ml">Language mirror</div>
          <div class="mt" id="hMirror">You speak <b>${nameOf(state.spoken)}</b> · others hear you in <b>their</b> language</div></div>
@@ -574,7 +590,7 @@ function renderHome(){
          </div>
          <div class="mini-row">
            ${[['Christine','en','women/65'],['Aiko','ja','women/79'],['Mateo','es','men/83'],['Sena','fr','men/52']].map(([nm,l,f])=>`
-             <div class="mini"><div class="mb"><img src="https://randomuser.me/api/portraits/${f}.jpg" alt="${nm}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"/></div><span class="ml2">${l.toUpperCase()}</span></div>`).join('')}
+             <div class="mini"><div class="mb"><img src="https://randomuser.me/api/portraits/${f}.jpg" alt="${nm}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"/></div><span class="ml2" title="${nameOf(l)}">${flag(l)}</span></div>`).join('')}
          </div>
          <div class="room-foot">
            <span class="room-meta">4 participants · 4 listening languages</span>
@@ -790,10 +806,10 @@ $('navSettings').onclick=()=>go('settings');
    ========================================================================= */
 const FACE=n=>`https://randomuser.me/api/portraits/${n}.jpg`; // [ILLUSTRATIVE ONLY] placeholder faces
 const PEOPLE=[ // [ILLUSTRATIVE ONLY]
-  {id:'you',name:'You',img:FACE('women/65'),lang:'en',you:true},
-  {id:'sofia',name:'Sofía',img:FACE('women/68'),lang:'es'},
-  {id:'kenji',name:'Kenji',img:FACE('men/83'),lang:'ja'},
-  {id:'amara',name:'Amara',img:FACE('women/90'),lang:'fr'},
+  {id:'you',name:'You',img:FACE('women/65'),lang:'en',you:true,accent:'#F0C3A6'},
+  {id:'sofia',name:'Sofía',img:FACE('women/68'),lang:'es',accent:'#C9BCEF'},
+  {id:'kenji',name:'Kenji',img:FACE('men/83'),lang:'ja',accent:'#A6D4B4'},
+  {id:'amara',name:'Amara',img:FACE('women/90'),lang:'fr',accent:'#E4D283'},
 ];
 let joinTimers=[];
 function renderLive(){
@@ -813,11 +829,11 @@ function renderLive(){
 }
 function paintBubbles(present){
   $('bubbles').innerHTML = present.map(p=>`
-    <div class="bubble" id="b-${p.id}">
+    <div class="bubble" id="b-${p.id}" style="--accent:${p.accent||'#F0DDB5'}">
       <div class="ring"><img src="${p.img}" alt="${p.name}" referrerpolicy="no-referrer" onerror="this.remove()"/></div>
       <div class="pulse"><span class="bd"></span> Wait — translating…</div>
       <div class="nm">${p.name}${p.you?' (you)':''}</div>
-      <div class="badge">${(LANGS.find(l=>l[0]===p.lang)||['','',''])[2]} ${nameOf(p.lang)}
+      <div class="badge">${flag(p.lang)} ${nameOf(p.lang)}
         ${p.you?`<span class="vm ${state.callVoiceMode!=='preserve'?'neutral':''}" id="youVM">· ${state.callVoiceMode==='preserve'?'your voice':'neutral'}</span>`:''}
       </div>
     </div>`).join('');
@@ -864,9 +880,9 @@ function drawBody(kind){
       `<div style="color:var(--ink-3);font-size:14px;text-align:center;padding:30px 10px">Your conversation will appear here.</div>`;
     b.scrollTop=b.scrollHeight;
   } else if(kind==='people'){
-    b.innerHTML = PEOPLE.map(p=>`<div class="prow"><div class="pa">${p.emoji}</div>
+    b.innerHTML = PEOPLE.map(p=>`<div class="prow"><div class="pa" style="--accent:${p.accent||'#F0DDB5'};border:2px solid var(--accent)"><img src="${p.img}" alt="${p.name}" referrerpolicy="no-referrer" onerror="this.remove()"/></div>
        <div class="pn">${p.name}${p.you?' (you)':''}</div>
-       <div class="pl">${nameOf(p.lang)}</div></div>`).join('');
+       <div class="pl">${flag(p.lang)} ${nameOf(p.lang)}</div></div>`).join('');
   } else if(kind==='chat'){
     b.innerHTML = `<div class="msg"><b>Sofía</b><p>¡Hola a todos! 👋</p></div>
        <div style="color:var(--ink-3);font-size:12px">Chat is illustrative.</div>`;
@@ -889,7 +905,7 @@ function drawBody(kind){
 }
 function tline(t){
   return `<div class="tline ${t.typing?'typing':''}">
-     <div class="who">${t.name} <span class="fl">${nameOf(t.from)} → ${nameOf(t.to)}</span></div>
+     <div class="who">${t.name} <span class="fl">${flag(t.from)} ${nameOf(t.from)} → ${flag(t.to)} ${nameOf(t.to)}</span></div>
      <div class="tgt">${t.target}</div>
      ${(state.dual==='both'&&t.source)?`<div class="src">“${t.source}”</div>`:''}
    </div>`;
