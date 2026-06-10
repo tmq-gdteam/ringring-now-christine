@@ -180,7 +180,7 @@
   .modal .mfoot .btn{flex:1}
 
   /* ---------- LIVE WORKSPACE ---------- */
-  #live{display:none;height:100%;flex-direction:column;background:#F7F8FA}
+  #live{display:none;height:100%;flex-direction:column;background:#F7F8FA;position:relative}
   #live.show{display:flex}
   .live-top{display:flex;align-items:center;gap:12px;padding:12px 18px;flex-shrink:0}
   .live-top .room{font-weight:700;font-size:15px}
@@ -200,7 +200,7 @@
   .bubble .ring{width:172px;height:172px;border-radius:50%;overflow:hidden;position:relative;margin:0 auto;
      background:linear-gradient(135deg,#FFE2C2,#F1A875);display:grid;place-items:center;font-size:62px;
      box-shadow:0 8px 30px rgba(27,32,48,.10);transition:.35s;border:4px solid var(--accent,#F0DDB5)}
-  .bubble.speaking .ring{border-color:var(--amber);box-shadow:0 0 0 6px var(--amber-soft),0 10px 34px rgba(230,162,60,.3);transform:scale(1.04)}
+  .bubble.speaking .ring{border-color:var(--accent);box-shadow:0 0 0 7px var(--accent-soft),0 12px 36px rgba(27,32,48,.16);transform:scale(1.06)}
   .bubble .nm{margin-top:12px;font-weight:600;font-size:14px}
   .bubble .badge{display:inline-flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;font-weight:600;
      color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:4px 9px;border-radius:999px}
@@ -292,6 +292,38 @@
      background:#fff;border-top:1px solid var(--line);padding:8px;flex-shrink:0}
   .demobar b{color:var(--ink-2)}
   .demobar button{font-size:12px;font-weight:700;color:var(--brand)}
+
+  /* ---- live room polish (transcript thumbs, participants, chat, dock, header, states) ---- */
+  .tline .who{display:flex;align-items:center;gap:8px}
+  .tav{width:26px;height:26px;border-radius:50%;overflow:hidden;border:2px solid var(--accent,#F0DDB5);flex-shrink:0}
+  .tav img{width:100%;height:100%;object-fit:cover;display:block}
+  .tline .who .ltag{font-size:11px;color:var(--ink-3);font-weight:600;display:inline-flex;align-items:center;gap:5px}
+  .tline .tgt .tfor{font-size:10px;color:var(--ink-3);font-weight:600;margin-left:8px}
+  .prow .pmeta{display:flex;flex-direction:column;min-width:0}
+  .prow .psub{font-size:11.5px;color:var(--ink-2);display:inline-flex;align-items:center;gap:5px;margin-top:1px}
+  .vbadge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .vbadge.self{background:var(--mint-soft);color:#1f7a59}
+  .vbadge.preserved{background:var(--amber-soft);color:#8a6418}
+  .vbadge.neutral{background:var(--surface-2);color:var(--ink-2)}
+  .chat-note{color:var(--ink-3);font-size:12px;margin-top:8px}
+  .docknote{font-size:11.5px;color:var(--ink-3);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+  .roomlangs{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:5px 0 3px}
+  .roomlangs .grlabel{font-size:11px;font-weight:700;color:var(--ink-3);background:var(--surface-2);padding:2px 9px;border-radius:999px}
+  .roomlangs .rl{font-size:11.5px;font-weight:600;color:var(--ink-2);display:inline-flex;align-items:center;gap:5px}
+  .roomlangs .rl::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--d,#ccc)}
+  .roomlangs .rlnote{font-size:10.5px;color:var(--ink-3)}
+  #bubbles.has-active .bubble:not(.speaking){opacity:.55}
+  .waiting{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;margin:auto;padding:40px}
+  .waiting .brandline{font-size:13px;color:var(--ink-3);font-weight:600}
+  .waiting .wtitle{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .waiting .wsub{font-size:14px;color:var(--ink-2)}
+  .waiting .btn{margin-top:10px}
+  .endscreen{position:absolute;inset:0;background:var(--hero-grad);display:grid;place-items:center;z-index:40;padding:24px}
+  .endcard{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .endcard .endline{font-size:23px;font-weight:700;letter-spacing:-.02em}
+  .endcard .endsub{font-size:14px;color:var(--ink-2)}
+  .endcard .endactions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+  .endscreen[hidden],.waiting[hidden]{display:none}
 
   /* ---------- top nav + demo chip ---------- */
   .topnav{display:flex;gap:4px;margin-left:10px}
@@ -401,6 +433,14 @@
   <div class="live-top">
     <div>
       <div class="room">Open Room <span class="illus">ILLUSTRATIVE</span></div>
+      <div class="roomlangs">
+        <span class="grlabel">Global room</span>
+        <span class="rl" style="--d:#F0C3A6">English</span>
+        <span class="rl" style="--d:#C9BCEF">Spanish</span>
+        <span class="rl" style="--d:#A6D4B4">Japanese</span>
+        <span class="rl" style="--d:#E4D283">French</span>
+        <span class="rlnote">real session languages only in production</span>
+      </div>
       <div class="sub" id="liveSub">Waiting for others to join…</div>
     </div>
     <span class="spacer"></span>
@@ -412,6 +452,12 @@
   <div class="stage" id="stage">
     <div class="canvas">
       <div class="bubbles" id="bubbles"><!-- populated by JS --></div>
+      <div class="waiting" id="waiting" hidden>
+        <div class="brandline">Where every voice is understood.</div>
+        <div class="wtitle">Waiting for others to join</div>
+        <div class="wsub">Your room link is ready to share.</div>
+        <button class="btn ghost" id="copyLink">🔗 Copy link</button>
+      </div>
     </div>
 
     <!-- Drawer: hosts Transcript / Participants / Chat / Dock one at a time -->
@@ -419,6 +465,7 @@
       <div class="dr-head">
         <b id="drTitle">Transcript</b>
         <span class="spacer"></span>
+        <span class="illus" id="drIllus" style="display:none">ILLUSTRATIVE</span>
         <div class="seg-mini" id="dualToggle" style="display:none">
           <button data-dual="both" aria-pressed="true">Both</button>
           <button data-dual="target" aria-pressed="false">Mine only</button>
@@ -452,6 +499,19 @@
     <b>Demo:</b> simulate the moment a guest speaks in another language
     <button id="simSpeak">▶ Play translated reply</button>
     <button id="simDegrade">⤓ Toggle degraded</button>
+    <button id="simReconnect">⟳ Reconnecting</button>
+  </div>
+
+  <div class="endscreen" id="endscreen" hidden>
+    <div class="endcard">
+      <img class="logo-img" src="assets/logo.png" alt="RingRing.now" style="height:34px;margin-bottom:4px" />
+      <div class="endline">Meet the world in your own voice.</div>
+      <div class="endsub">You left the room.</div>
+      <div class="endactions">
+        <button class="btn primary" id="endStart">Start another conversation</button>
+        <button class="btn ghost" id="endHome">Back to dashboard</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -806,30 +866,33 @@ $('navSettings').onclick=()=>go('settings');
    ========================================================================= */
 const FACE=n=>`https://randomuser.me/api/portraits/${n}.jpg`; // [ILLUSTRATIVE ONLY] placeholder faces
 const PEOPLE=[ // [ILLUSTRATIVE ONLY]
-  {id:'you',name:'You',img:FACE('women/65'),lang:'en',you:true,accent:'#F0C3A6'},
-  {id:'sofia',name:'Sofía',img:FACE('women/68'),lang:'es',accent:'#C9BCEF'},
-  {id:'kenji',name:'Kenji',img:FACE('men/83'),lang:'ja',accent:'#A6D4B4'},
-  {id:'amara',name:'Amara',img:FACE('women/90'),lang:'fr',accent:'#E4D283'},
+  {id:'you',name:'You',img:FACE('women/65'),lang:'en',you:true,accent:'#F0C3A6',soft:'#FBE3D6'},
+  {id:'sofia',name:'Sofía',img:FACE('women/68'),lang:'es',accent:'#C9BCEF',soft:'#EAE3F7',voiceMode:'preserved'},
+  {id:'kenji',name:'Kenji',img:FACE('men/83'),lang:'ja',accent:'#A6D4B4',soft:'#DCEFE0',voiceMode:'preserved'},
+  {id:'amara',name:'Amara',img:FACE('women/90'),lang:'fr',accent:'#E4D283',soft:'#F7EECB',voiceMode:'neutral'},
 ];
 let joinTimers=[];
 function renderLive(){
+  $('endscreen').hidden=true;
   $('liveSub').textContent='Waiting for others to join…';
   $('voicePillLabel').textContent = state.callVoiceMode==='preserve'?'Your voice':'Neutral voice';
   $('voicePill').classList.toggle('neutral',state.callVoiceMode!=='preserve');
-  // start with just you, then guests "join" (empty → populated state)
+  transcript = seedTranscript();
+  // empty room → only self present: show the waiting state, then guests join
   let present=[PEOPLE[0]];
   paintBubbles(present);
+  $('bubbles').style.display='none'; $('waiting').hidden=false;
   joinTimers.forEach(clearTimeout); joinTimers=[];
   [1,2,3].forEach((i,idx)=>{ joinTimers.push(setTimeout(()=>{ present.push(PEOPLE[i]); paintBubbles(present);
+     if(idx===0){ $('waiting').hidden=true; $('bubbles').style.display='grid'; }
      $('liveSub').textContent=`${present.length} people · ${[...new Set(present.map(p=>p.lang))].map(nameOf).join(', ')}`;
-  },700+idx*900)); });
-  // default: transcript drawer hint closed
-  closeDrawer();
+  },1100+idx*900)); });
+  openDrawer('transcript');   // transcript open by default in this demo
   setHealth('idle');
 }
 function paintBubbles(present){
   $('bubbles').innerHTML = present.map(p=>`
-    <div class="bubble" id="b-${p.id}" style="--accent:${p.accent||'#F0DDB5'}">
+    <div class="bubble" id="b-${p.id}" style="--accent:${p.accent||'#F0DDB5'};--accent-soft:${p.soft||'#F4ECE2'}">
       <div class="ring"><img src="${p.img}" alt="${p.name}" referrerpolicy="no-referrer" onerror="this.remove()"/></div>
       <div class="pulse"><span class="bd"></span> Wait — translating…</div>
       <div class="nm">${p.name}${p.you?' (you)':''}</div>
@@ -843,6 +906,7 @@ function setHealth(mode){
   h.classList.remove('translating','degraded');
   if(mode==='translating'){h.classList.add('translating');l.textContent='Translating…';}
   else if(mode==='degraded'){h.classList.add('degraded');l.textContent='Captions only';}
+  else if(mode==='reconnecting'){h.classList.add('translating');l.textContent='Reconnecting…';}
   else l.textContent='Listening';
 }
 
@@ -851,6 +915,7 @@ function openDrawer(kind){
   state.drawer=kind; const d=$('drawer'); d.classList.add('open'); d.setAttribute('aria-hidden','false');
   $('dualToggle').style.display = kind==='transcript'?'flex':'none';
   $('drExpand').style.display = kind==='transcript'?'grid':'none';
+  $('drIllus').style.display = kind==='transcript'?'inline-block':'none';
   $('chatInput').style.display = kind==='chat'?'flex':'none';
   $('drTitle').textContent={transcript:'Transcript',people:'Participants',chat:'Chat',dock:'Language & voice'}[kind];
   ['cCaptions','cPeople','cChat','cDock'].forEach(id=>$(id).classList.remove('active'));
@@ -880,34 +945,50 @@ function drawBody(kind){
       `<div style="color:var(--ink-3);font-size:14px;text-align:center;padding:30px 10px">Your conversation will appear here.</div>`;
     b.scrollTop=b.scrollHeight;
   } else if(kind==='people'){
-    b.innerHTML = PEOPLE.map(p=>`<div class="prow"><div class="pa" style="--accent:${p.accent||'#F0DDB5'};border:2px solid var(--accent)"><img src="${p.img}" alt="${p.name}" referrerpolicy="no-referrer" onerror="this.remove()"/></div>
-       <div class="pn">${p.name}${p.you?' (you)':''}</div>
-       <div class="pl">${flag(p.lang)} ${nameOf(p.lang)}</div></div>`).join('');
+    b.innerHTML = PEOPLE.map(p=>{
+      const badge = p.you
+        ? (state.callVoiceMode==='preserve' ? `<span class="vbadge self">Your voice</span>` : `<span class="vbadge neutral">Neutral voice</span>`)
+        : (p.voiceMode==='neutral' ? `<span class="vbadge neutral">Neutral voice</span>` : `<span class="vbadge preserved">Voice preserved</span>`);
+      return `<div class="prow">
+         <div class="pa" style="--accent:${p.accent||'#F0DDB5'};border:2px solid var(--accent)"><img src="${p.img}" alt="${p.name}" referrerpolicy="no-referrer" onerror="this.remove()"/></div>
+         <div class="pmeta"><div class="pn">${p.name}${p.you?' (you)':''}</div><div class="psub">${flag(p.lang)} ${nameOf(p.lang)}</div></div>
+         <span style="flex:1"></span>${badge}</div>`;
+    }).join('');
   } else if(kind==='chat'){
-    b.innerHTML = `<div class="msg"><b>Sofía</b><p>¡Hola a todos! 👋</p></div>
-       <div style="color:var(--ink-3);font-size:12px">Chat is illustrative.</div>`;
+    b.innerHTML = `
+       ${chatMsg('Sofía','Spanish','¡Hola a todos! 👋')}
+       ${chatMsg('Kenji','Japanese','Looking forward to working together.')}
+       ${chatMsg('You','English','Welcome, everyone — glad you could join.')}
+       <div class="chat-note">Chat is illustrative. Messages are shown as written — not auto-translated.</div>`;
   } else if(kind==='dock'){
     b.innerHTML = `
       <div class="field" style="margin-bottom:14px"><label>Voice mode</label>
         <div class="seg" role="group">
-          <button id="dkPreserve" aria-pressed="${state.callVoiceMode==='preserve'}">Your voice</button>
-          <button id="dkNeutral" aria-pressed="${state.callVoiceMode!=='preserve'}">Neutral</button>
+          <button id="dkPreserve" aria-pressed="${state.callVoiceMode==='preserve'}">Preserve my voice</button>
+          <button id="dkNeutral" aria-pressed="${state.callVoiceMode!=='preserve'}">Use neutral voice</button>
         </div></div>
-      <div class="field" style="margin-bottom:14px"><label>Caption language</label><select id="dkCap">${langOptions(state.caption)}</select></div>
-      <div class="field"><label>Original voice under translation <span class="illus">if supported</span></label>
-        <input type="range" min="0" max="40" value="15" id="dkBalance" disabled style="opacity:.5"/>
-        <small style="color:var(--ink-3);font-size:11.5px">Balance control appears when supported by your connection.</small>
-      </div>`;
+      <div class="field"><label for="dkCap">Caption language</label><select id="dkCap">${langOptions(state.caption)}</select></div>
+      <div class="docknote">Voice fidelity &amp; latency to be verified in product.</div>`;
     $('dkPreserve').onclick=()=>setCallVoice('preserve');
     $('dkNeutral').onclick=()=>setCallVoice('neutral');
     $('dkCap').onchange=e=>{state.caption=e.target.value;toast('Caption language updated');};
   }
 }
+function chatMsg(n,l,t){return `<div class="msg"><b>${n} · ${l}</b><p>${t}</p></div>`;}
+// transcript line builders — dual-language, illustrative
+function lineFor(id,from,source,target,status){const p=PEOPLE.find(x=>x.id===id)||{};
+  return {speakerId:id,name:p.name,photo:p.img,accent:p.accent,from,to:'en',source,target,status:status||'locked'};}
+function seedTranscript(){return [
+  lineFor('sofia','es','Me alegra mucho conoceros a todos.',"I'm so glad to meet you all."),
+  lineFor('kenji','ja','よろしくお願いします。','I look forward to working together.'),
+  lineFor('amara','fr','Ravie de vous rencontrer enfin.','Delighted to finally meet you.'),
+];}
 function tline(t){
-  return `<div class="tline ${t.typing?'typing':''}">
-     <div class="who">${t.name} <span class="fl">${flag(t.from)} ${nameOf(t.from)} → ${flag(t.to)} ${nameOf(t.to)}</span></div>
-     <div class="tgt">${t.target}</div>
-     ${(state.dual==='both'&&t.source)?`<div class="src">“${t.source}”</div>`:''}
+  const head=`<div class="who"><span class="tav" style="--accent:${t.accent}"><img src="${t.photo}" alt="" referrerpolicy="no-referrer" onerror="this.remove()"></span><b>${t.name}</b> <span class="ltag">${flag(t.from)} ${nameOf(t.from)}</span></div>`;
+  if(t.status==='typing') return `<div class="tline typing">${head}<div class="tgt">${t.source}</div></div>`;
+  return `<div class="tline">${head}
+     <div class="tgt">${t.target}<span class="tfor">translated for you</span></div>
+     ${state.dual==='both'?`<div class="src">“${t.source}”</div>`:''}
    </div>`;
 }
 document.querySelectorAll('#dualToggle button').forEach(btn=>btn.onclick=()=>{
@@ -923,7 +1004,7 @@ function setCallVoice(mode){
   $('voicePillLabel').textContent= mode==='preserve'?'Your voice':'Neutral voice';
   const yv=$('youVM'); if(yv){yv.textContent='· '+(mode==='preserve'?'your voice':'neutral');yv.classList.toggle('neutral',mode!=='preserve');}
   if(state.drawer==='dock')drawBody('dock');
-  toast(mode==='preserve'?'Now using your voice':'Now using Neutral Voice');
+  toast(mode==='preserve'?'Now preserving your voice.':'Now using Neutral Voice.');
 }
 $('voicePill').onclick=()=>setCallVoice(state.callVoiceMode==='preserve'?'neutral':'preserve');
 
@@ -931,32 +1012,35 @@ $('voicePill').onclick=()=>setCallVoice(state.callVoiceMode==='preserve'?'neutra
 $('cMic').onclick=()=>$('cMic').classList.toggle('off');
 $('cCam').onclick=()=>$('cCam').classList.toggle('off');
 $('cShare').onclick=()=>{ $('cShare').classList.toggle('active'); toast('Screen share is illustrative in this demo'); };
-$('cLeave').onclick=()=>{ if(confirm('Leave this conversation?')){ joinTimers.forEach(clearTimeout); go('home'); } };
+$('cLeave').onclick=()=>{ joinTimers.forEach(clearTimeout); $('endscreen').hidden=false; };
+
+/* ----- honest states: waiting copy-link, leave/end screen, reconnecting ----- */
+$('copyLink').onclick=()=>{ try{ navigator.clipboard && navigator.clipboard.writeText('ringring.now/room/open-room'); }catch(e){} toast('Room link copied'); };
+$('endStart').onclick=()=>{ $('endscreen').hidden=true; state.joinPath=false; go('precall'); };
+$('endHome').onclick=()=>{ $('endscreen').hidden=true; go('home'); };
+$('simReconnect').onclick=()=>{ setHealth('reconnecting'); setTimeout(()=>setHealth(state.degraded?'degraded':'idle'),2200); };
 
 /* ----- chat send ----- */
 $('chatSend').onclick=()=>{const f=$('chatField');if(!f.value.trim())return;
-  $('drBody').innerHTML+=`<div class="msg"><b>You</b><p>${f.value.replace(/</g,'&lt;')}</p></div>`;f.value='';$('drBody').scrollTop=$('drBody').scrollHeight;};
+  $('drBody').innerHTML+=`<div class="msg"><b>You · English</b><p>${f.value.replace(/</g,'&lt;')}</p></div>`;f.value='';$('drBody').scrollTop=$('drBody').scrollHeight;};
 $('chatField')&&$('chatField').addEventListener('keydown',e=>{if(e.key==='Enter')$('chatSend').click();});
 
 /* ----- THE AHA MOMENT: speak → pulse → translated reply → transcript ----- */
 function simulateSpeak(){
-  const speaker=PEOPLE[1]; // Sofía (es) [ILLUSTRATIVE]
-  const b=$('b-'+speaker.id); if(!b)return;
-  if(!state.drawer) openDrawer('transcript');
+  const b=$('b-sofia'); if(!b) return;            // Sofía (es) [ILLUSTRATIVE]
+  if(state.drawer!=='transcript') openDrawer('transcript');
+  $('bubbles').classList.add('has-active');        // others soften
   b.classList.add('speaking','translating');
   setHealth('translating');
-  // live-typing line
-  const line={name:speaker.name,from:speaker.lang,to:state.listening,
-     target:(state.listening==='en'?'So glad we can finally talk like this':'Me alegra que por fin podamos hablar así'),
-     source:'Me alegra que por fin podamos hablar así', typing:true};
-  transcript.push(line); if(state.drawer==='transcript')drawBody('transcript');
-  setTimeout(()=>{ // resolve grey → locked
+  const line=lineFor('sofia','es','Encantada de conoceros. ¿Empezamos?','Lovely to meet you all. Shall we start?','typing');
+  transcript.push(line); drawBody('transcript');
+  setTimeout(()=>{                                 // grey typing → locked dual-language
     b.classList.remove('translating');
-    line.typing=false; if(state.drawer==='transcript')drawBody('transcript');
-    setHealth('idle');
-    setTimeout(()=>b.classList.remove('speaking'),900);
-    toast('Heard in '+nameOf(state.listening)+(state.callVoiceMode==='preserve'?' — in Sofía’s voice':''));
-  },2200);
+    line.status='locked'; drawBody('transcript');
+    setHealth(state.degraded?'degraded':'idle');
+    setTimeout(()=>{ b.classList.remove('speaking'); $('bubbles').classList.remove('has-active'); },1000);
+    toast('Heard in English'+(state.callVoiceMode==='preserve'?' — in Sofía’s voice':''));
+  },2000);
 }
 $('simSpeak').onclick=simulateSpeak;
 $('simDegrade').onclick=()=>{
